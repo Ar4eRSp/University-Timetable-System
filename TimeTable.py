@@ -109,7 +109,7 @@ class TimeTable():
         )
         """
         params = {
-            'classroom': self.classrooms_reverse[int(event['classroom'])],
+            'classroom': self.classrooms_reverse[event['classroom']],
             'discipline': self.disciplines_reverse[event['title']],
             'start': datetime.strptime(event['start'], "%Y-%m-%dT%H:%M:%S").isoformat(),
             'end': event['end'],

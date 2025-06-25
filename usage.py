@@ -9,7 +9,7 @@ from TimeTable import TimeTable
 
 dash._dash_renderer._set_react_version("18.2.0")
 
-FILENAME = 'TimeTable.db'
+FILENAME = 'TimeTableTest.db'
 TT = TimeTable(FILENAME)
 
 app = Dash(__name__, prevent_initial_callbacks=True)
@@ -153,7 +153,7 @@ app.layout = html.Div(style={"width": "100%", "align-items": "center"},
                                             label="Выберете преподавателя",
                                             placeholder="Выберите",
                                             id="teacher_select",
-                                            value=list(TT.teachers.values())[0],
+                                            value="ng",
                                             data=list(TT.teachers.values()),
                                             style={"width": "100%", "marginBottom": 10},
                                             required=True,
@@ -167,7 +167,7 @@ app.layout = html.Div(style={"width": "100%", "align-items": "center"},
                                             label="Выберете аудиторию",
                                             placeholder="Выберите",
                                             id="classroom_input",
-                                            value=list(map(str, TT.classrooms.values()))[0],
+                                            value='ng',
                                             data=list(map(str, TT.classrooms.values())),
                                             style={"width": "100%", "marginBottom": 10},
                                             required=True,
@@ -216,7 +216,7 @@ app.layout = html.Div(style={"width": "100%", "align-items": "center"},
                                             label="Выберете дисциплину",
                                             placeholder="Выберите",
                                             id="event_name_input",
-                                            value=list(TT.disciplines.values())[0],
+                                            value='ng',
                                             data=list(TT.disciplines.values()),
                                             style={"width": "100%", "marginBottom": 10},
                                             required=True,
@@ -398,10 +398,10 @@ def open_add_modal(dateClicked, close_clicks, opened):   #окно создан�
     ctx = callback_context
 
 
-    # if not ctx.triggered:
-    #     raise PreventUpdate
-    # else:
-    button_id = ctx.triggered[0]["prop_id"].split(".")[0]
+    if not ctx.triggered:
+        raise PreventUpdate
+    else:
+        button_id = ctx.triggered[0]["prop_id"].split(".")[0]
 
     if button_id == "calendar" and dateClicked is not None:
         try:
@@ -463,8 +463,8 @@ def add_new_event(
     classroom_select
 ):
     # print("Сохранения нового события")
-    # if n is None:
-    #     raise PreventUpdate
+    if n is None:
+        raise PreventUpdate
     start_time_obj = datetime.strptime(start_date + ' ' + start_time, "%Y-%m-%d %H:%M")
     end_time_obj = datetime.strptime(end_date + ' ' + end_time, "%Y-%m-%d %H:%M")
 
@@ -486,13 +486,13 @@ def add_new_event(
     }
     TT.add_event(new_event)
     if not teacher_select and not classroom_select:
-        return TT.get_events(), False, "", "bg-gradient-primary", ""
+        return TT.get_events(), False, list(TT.disciplines.values())[0], "bg-gradient-primary", ""
     elif not teacher_select:
-        return [event for event in TT.get_events() if event['classroom'] in classroom_select], False, "", "bg-gradient-primary", ""
+        return [event for event in TT.get_events() if event['classroom'] in classroom_select], False, list(TT.disciplines.values())[0], "bg-gradient-primary", ""
     elif not classroom_select:
-        return [event for event in TT.get_events() if event['teacher'] in teacher_select], False, "", "bg-gradient-primary", ""
+        return [event for event in TT.get_events() if event['teacher'] in teacher_select], False, list(TT.disciplines.values())[0], "bg-gradient-primary", ""
     else:
-        return [event for event in TT.get_events() if event['teacher'] in teacher_select and event['classroom'] in classroom_select], False, "", "bg-gradient-primary", ""
+        return [event for event in TT.get_events() if event['teacher'] in teacher_select and event['classroom'] in classroom_select], False, list(TT.disciplines.values())[0], "bg-gradient-primary", ""
 
 @app.callback(
     Output("calendar", "events", allow_duplicate=True),
@@ -522,4 +522,4 @@ def display_output(value, charCount):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=8056)
+    app.run(port=8056)
